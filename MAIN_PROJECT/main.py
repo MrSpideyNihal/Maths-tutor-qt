@@ -1,3 +1,5 @@
+#please read all comments 
+#btw current issue solution :- wait until speech ends then press enter
 import sys
 import time
 import threading
