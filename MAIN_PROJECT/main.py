@@ -1,5 +1,6 @@
 #please read all comments 
 #btw current issue solution :- wait until speech ends then press enter
+#play_song will be added later
 import sys
 import time
 import threading
@@ -40,8 +41,12 @@ class MathsTutorWindow(QtWidgets.QMainWindow):
         # Create entry field
         self.entry = QtWidgets.QLineEdit()
         self.entry.returnPressed.connect(self.on_entry_activated)
+        self.entry.setFixedHeight(50)  
+        font1 = QtGui.QFont()
+        font1.setPointSize(32)  #you can adjust the size of  text in entry
+        self.entry.setFont(font1)
         vbox_main.addWidget(self.entry)
-    
+        
         # Additional widgets and layout for images
         self.image_label = QtWidgets.QLabel()
         self.image_label.setAlignment(QtCore.Qt.AlignCenter)
@@ -83,6 +88,9 @@ class MathsTutorWindow(QtWidgets.QMainWindow):
     
         self.load_question_file("data.txt")
         self.set_image("welcome", 3)
+
+
+    #------------methods/functions--------------#
     def set_image(self, name, rand_range):
         # Clear existing image labels
         for i in reversed(range(self.centralWidget().layout().count())):
@@ -319,7 +327,7 @@ class MathsTutorWindow(QtWidgets.QMainWindow):
         self.on_destroy()
 
     def show_user_guide():
-        pass
+        pass # it will be updated
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
