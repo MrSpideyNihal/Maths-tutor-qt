@@ -395,3 +395,4 @@ if __name__ == "__main__":
     win.show()
     sys.exit(app.exec_())
 
+#it is only for demostration , it is just a prototype (Main project will way better than this )
