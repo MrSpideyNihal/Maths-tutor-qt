@@ -1,6 +1,13 @@
 #please read all comments 
-#btw current issue solution :- wait until speech ends then press enter
+#note---------------------------------------------------------------------|
+#btw current issue solution :- wait until speak ends then press enter    |
+--------------------------------------------------------------------------|
 #This is qt version of maths-tutor
+
+
+
+
+
 import sys
 import time
 import threading
@@ -17,6 +24,7 @@ engine = pyttsx3.init()
 engine.setProperty('rate', 150)  
 
 class MathsTutorWindow(QtWidgets.QMainWindow):
+ #ui-------------------------------   
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Maths-Tutor")
@@ -92,7 +100,7 @@ class MathsTutorWindow(QtWidgets.QMainWindow):
         self.set_image("welcome", random.randrange(1,4))
         self.media_player = QMediaPlayer()
         self.play_music('welcome')
-        
+#------------------methods-------------------------------------------#
     def set_image(self, name, rand_range):
         # Clear existing image labels
         for i in reversed(range(self.centralWidget().layout().count())):
@@ -377,6 +385,9 @@ class MathsTutorWindow(QtWidgets.QMainWindow):
 
     def show_user_guide():
         pass
+
+
+#--------------------------MAIN_LOOP_____________#
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
