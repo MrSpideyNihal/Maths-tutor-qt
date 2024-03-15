@@ -1,12 +1,14 @@
 #please read all comments 
 #btw current issue solution :- wait until speech ends then press enter
-#play_song will be added later
+
 import sys
 import time
 import threading
 import math
 import random
 import re
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
+from PyQt5.QtCore import QUrl
 import os
 from PyQt5 import QtWidgets, QtGui, QtCore
 import pyttsx3
@@ -32,7 +34,7 @@ class MathsTutorWindow(QtWidgets.QMainWindow):
         self.label = QtWidgets.QLabel("Welcome to Maths Tutor!\nPress Enter to Start")
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         font = self.label.font()
-        font.setPointSize(24)
+        font.setPointSize(22)
         self.label.setFont(font)
     
         # Add welcome label to the main layout
@@ -43,10 +45,10 @@ class MathsTutorWindow(QtWidgets.QMainWindow):
         self.entry.returnPressed.connect(self.on_entry_activated)
         self.entry.setFixedHeight(50)  
         font1 = QtGui.QFont()
-        font1.setPointSize(32)  #you can adjust the size of  text in entry
+        font1.setPointSize(32)  
         self.entry.setFont(font1)
         vbox_main.addWidget(self.entry)
-        
+    
         # Additional widgets and layout for images
         self.image_label = QtWidgets.QLabel()
         self.image_label.setAlignment(QtCore.Qt.AlignCenter)
@@ -88,9 +90,9 @@ class MathsTutorWindow(QtWidgets.QMainWindow):
     
         self.load_question_file("data.txt")
         self.set_image("welcome", 3)
-
-
-    #------------methods/functions--------------#
+        self.media_player = QMediaPlayer()
+        self.play_music('welcome')
+        
     def set_image(self, name, rand_range):
         # Clear existing image labels
         for i in reversed(range(self.centralWidget().layout().count())):
@@ -127,7 +129,22 @@ class MathsTutorWindow(QtWidgets.QMainWindow):
         # Add a spacer item to push the entry field to the bottom
         spacer_item = QtWidgets.QSpacerItem(1, 1, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         central_layout.addItem(spacer_item)
-    
+ 
+    def play_music(self, name, rand_range=1):
+        print("Playing file " + name + " rand =" + str(rand_range))
+        if rand_range == 1:
+            file_path_and_name = f"sounds/{name}.mp3"
+        else:
+            value = str(random.randint(1, rand_range))
+            file_path_and_name = f"sounds/{name}-{value}.mp3"
+
+        try:
+            media = QMediaContent(QUrl.fromLocalFile(file_path_and_name))
+            self.media_player.setMedia(media)
+            self.media_player.play()
+        except Exception as e:
+            print("Error:", e)
+
     def speak(self, text):
         engine.say(text)
         engine.runAndWait()
@@ -163,29 +180,34 @@ class MathsTutorWindow(QtWidgets.QMainWindow):
                 if time_taken < time_alotted:
                     self.excellent = self.excellent + 3
                     self.final_score = self.final_score + 5
+                    self.play_music("excellent", 3)
+                    self.set_image("excellent", 3)
                     self.speak("Excellent!")
                     self.label.setText("Excellent!")
-                    self.set_image("excellent", 3)
                 elif time_taken < time_alotted + 2:
                     self.excellent = self.excellent + 2
                     self.final_score = self.final_score + 4
-                    self.speak("Very good!")
-                    self.label.setText("Very good!")
+                    self.play_music("very-good", 3)
                     self.set_image("very-good", 3)
+                    self.label.setText("Very good!")
+                    self.speak("Very good!")
                 elif time_taken < time_alotted + 4:
                     self.final_score = self.final_score + 3
+                    self.play_music("good", 3)
                     self.speak("Good!")
                     self.label.setText("Good!")
                     self.set_image("good", 3)
                 elif time_taken < time_alotted + 6:
                     self.excellent = 0
                     self.final_score = self.final_score + 2
+                    self.play_music("not-bad", 3)
                     self.speak("Not bad!")
                     self.label.setText("Not bad!")
                     self.set_image("not-bad", 3)
                 else:
                     self.excellent = -1
                     self.final_score = self.final_score + 1
+                    self.play_music("okay", 3)
                     self.speak("Okay!")
                     self.label.setText("Okay!")
                     self.set_image("okay", 3)
@@ -195,6 +217,7 @@ class MathsTutorWindow(QtWidgets.QMainWindow):
                 self.final_score = self.final_score - 1
                 self.incorrect_answer_count = self.incorrect_answer_count + 1
                 if self.incorrect_answer_count == 3:
+                    self.play_music("wrong-anwser-repeted", 2)
                     self.set_image("wrong-anwser-repeted", 2)
                     self.incorrect_answer_count = 0
                     text = "Sorry! the correct answer is "
@@ -209,6 +232,8 @@ class MathsTutorWindow(QtWidgets.QMainWindow):
                     self.label.setText("Sorry! let's try again")
                     self.speak("Sorry! let's try again")
                     self.set_image("wrong-anwser", 3)
+                    self.play_music("wrong-anwser", 3)
+
             QtCore.QTimer.singleShot(300, self.next_question)  # speed of pausing
             self.entry.clear()
 
@@ -252,12 +277,36 @@ class MathsTutorWindow(QtWidgets.QMainWindow):
                 self.speak(text)
                 self.label.setText(text)  # Update here
                 self.set_image("finished", 3)
+                self.play_music("finished", 3)
                 self.current_question_index = -1
 
     def announce_question(self, question, make_sound, announcing_question_index):
         if make_sound == '1':
-            # item_list = re.split(r'(\d+)', question)[1:-1]
-            self.speak(f"{question}equals to")
+           item_list = re.split(r'(\d+)', question)[1:-1]
+           self.speak(f"{question}equals to")
+           if(make_sound == '1'):
+            item_list = re.split(r'(\d+)', question)[1:-1]
+            for item in item_list:
+                # To prevent announcement on user answer
+                if(announcing_question_index != self.current_question_index):
+                    print("STOOOOOOOPPPPPPPPPP")
+                    return;
+                if item.isnumeric():
+
+                    num = int(item)
+                    while(num > 0):
+                        num = num-1;
+                        self.play_music("coin")
+                        time.sleep(0.7)
+                else:
+                    self.speak(self.convert_signs(item))
+                    time.sleep(0.7)
+            if(announcing_question_index != self.current_question_index):
+                self.speak("equals to? ")
+        else:
+            self.play_music("question")
+            time.sleep(0.7)
+            self.speak(self.convert_signs(self.question)+" equals to ? ")
 
     def on_destroy(self):
         print("CLOSE")
@@ -327,10 +376,11 @@ class MathsTutorWindow(QtWidgets.QMainWindow):
         self.on_destroy()
 
     def show_user_guide():
-        pass # it will be updated
+        pass
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     win = MathsTutorWindow()
     win.show()
     sys.exit(app.exec_())
+
