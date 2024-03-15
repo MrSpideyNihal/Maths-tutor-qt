@@ -1,6 +1,6 @@
 #please read all comments 
 #btw current issue solution :- wait until speech ends then press enter
-
+#This is qt version of maths-tutor
 import sys
 import time
 import threading
@@ -89,7 +89,7 @@ class MathsTutorWindow(QtWidgets.QMainWindow):
         self.incorrect_answer_count = 0
     
         self.load_question_file("data.txt")
-        self.set_image("welcome", 3)
+        self.set_image("welcome", random.randrange(1,4))
         self.media_player = QMediaPlayer()
         self.play_music('welcome')
         
