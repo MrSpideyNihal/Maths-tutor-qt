@@ -5,7 +5,7 @@
 #This is qt version of maths-tutor
 
 
-
+#if you are using load_question button please press enter after clicking it but first it must stop the speak(will be modified)
 
 
 import sys
